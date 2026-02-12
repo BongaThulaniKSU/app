@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lusungulo Fresh Broilers - Order & Track</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2e7d32">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="https://i.imgur.com/4xM5Z5H.png">
+<!-- Web App Manifest for "Add to Home Screen" -->
+<link rel="manifest" href="data:application/manifest+json,{
+  &quot;name&quot;: &quot;Lusungulo Fresh Broilers&quot;,
+  &quot;short_name&quot;: &quot;Lusungulo&quot;,
+  &quot;description&quot;: &quot;Order fresh broilers online&quot;,
+  &quot;start_url&quot;: &quot;.&quot;,
+  &quot;display&quot;: &quot;standalone&quot;,
+  &quot;background_color&quot;: &quot;#2e7d32&quot;,
+  &quot;theme_color&quot;: &quot;#2e7d32&quot;,
+  &quot;orientation&quot;: &quot;portrait&quot;,
+  &quot;icons&quot;: [
+    {
+      &quot;src&quot;: &quot;https://i.imgur.com/4xM5Z5H.png&quot;,
+      &quot;sizes&quot;: &quot;192x192&quot;,
+      &quot;type&quot;: &quot;image/png&quot;,
+      &quot;purpose&quot;: &quot;any maskable&quot;
+    },
+    {
+      &quot;src&quot;: &quot;https://i.imgur.com/4xM5Z5H.png&quot;,
+      &quot;sizes&quot;: &quot;512x512&quot;,
+      &quot;type&quot;: &quot;image/png&quot;,
+      &quot;purpose&quot;: &quot;any maskable&quot;
+    }
+  ]
+}">
+
+<!-- FontAwesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+body{
+  font-family:Arial, sans-serif;
+  background:linear-gradient(135deg,#f5f5f5 0%,#e8f5e9 100%);
+  margin:0;
+  padding:10px;
+  color:#333;
+}
+.app{
+  max-width:550px;
+  margin:auto;
+  background:white;
+  border-radius:15px;
+  box-shadow:0 5px 20px rgba(0,0,0,.2);
+  overflow:hidden;
+  padding-bottom:20px;
+}
+header{
+  background:#2e7d32;
+  color:white;
+  padding:20px;
+  text-align:center;
+  position:relative;
+}
+header h2{
+  margin-bottom:5px;
+  font-size:24px;
+}
+header p{
+  font-size:16px;
+  margin:5px 0;
+}
+.welcome-badge {
+  background:#ffd700;
+  color:#333;
+  padding:8px 15px;
+  border-radius:20px;
+  display:inline-block;
+  margin-top:10px;
+  font-weight:bold;
+}
+.offline-badge {
+  background:#ff6f00;
+  color:white;
+  padding:5px 10px;
+  border-radius:20px;
+  display:inline-block;
+  margin-top:5px;
+  font-size:12px;
+}
+.stock-badge {
+  background:#ff6f00;
+  color:white;
+  padding:8px 15px;
+  border-radius:20px;
+  display:inline-block;
+  margin-top:5px;
+  font-weight:bold;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+/* ONLY WHATSAPP FLOATING BUTTON - INSTALL BUTTON REMOVED */
+.whatsapp-float {
+  position:fixed;
+  bottom:20px;
+  left:20px;
+  background:#25d366;
+  color:white;
+  border-radius:50px;
+  padding:15px 25px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+  z-index:1000;
+  cursor:pointer;
+  border:none;
+  font-size:16px;
+  font-weight:bold;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  animation:pulse 2s infinite;
+  text-decoration:none;
+}
+.whatsapp-float i {
+  font-size:24px;
+}
+.special-deal {
+  background: linear-gradient(45deg,#ff9a9e,#fad0c4);
+  color:white;
+  padding:15px;
+  text-align:center;
+  border-radius:12px;
+  font-weight:bold;
+  margin:15px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+  animation: pulse 1.5s infinite;
+  font-size:16px;
+}
+.section{padding:15px;}
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:16px;
+  box-sizing: border-box;
+}
+button{
+  padding:14px;
+  margin-top:12px;
+  width:100%;
+  border:none;
+  border-radius:10px;
+  background:#4caf50;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+  font-weight:bold;
+  transition: all 0.3s;
+}
+button:hover{background:#388e3c;}
+.btn-warning{
+  background:#ff9800;
+}
+.btn-warning:hover{background:#f57c00;}
+.btn-danger{
+  background:#f44336;
+}
+.btn-danger:hover{background:#d32f2f;}
+.btn-info{
+  background:#2196f3;
+}
+.btn-info:hover{background:#1976d2;}
+.btn-success{
+  background:#4caf50;
+}
+.notice{
+  background:#c8e6c9;
+  padding:12px;
+  border-left:5px solid green;
+  margin:15px 0;
+  font-size:14px;
+  border-radius:5px;
+}
+#receipt{display:none;}
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:10000;
+}
+.modal-box{
+  background:white;
+  padding:25px;
+  border-radius:15px;
+  text-align:center;
+  max-width:90%;
+  max-height:90vh;
+  overflow-y:auto;
+}
+img.option-img{
+  width:100%;
+  border-radius:10px;
+  margin-top:10px;
+}
+.price-box{
+  background:#fff3e0;
+  padding:15px;
+  margin-top:15px;
+  border-left:5px solid #fb8c00;
+  font-weight:bold;
+  text-align:center;
+  font-size:20px;
+  transition: transform 0.2s;
+  border-radius:5px;
+}
+.menu-card{
+  border-radius:15px;
+  overflow:hidden;
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
+  margin-bottom:15px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-align:center;
+  background:white;
+  cursor:pointer;
+  position:relative;
+}
+.menu-card img{width:100%;height:200px;object-fit:cover;}
+.menu-card:hover{
+  transform:scale(1.03);
+  box-shadow:0 15px 30px rgba(0,0,0,.3);
+}
+.menu-card h4{color:#2e7d32;margin:12px 0;font-size:18px;}
+.menu-card p{font-weight:bold;color:#fb8c00;font-size:20px;}
+.stock-indicator{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:rgba(0,0,0,0.7);
+  color:white;
+  padding:5px 15px;
+  border-radius:20px;
+  font-size:14px;
+  font-weight:bold;
+}
+.low-stock{
+  background:#ff9800;
+}
+.out-stock{
+  background:#f44336;
+}
+.in-stock{
+  background:#4caf50;
+}
+.icon-input{
+  display:flex;
+  align-items:center;
+  margin-top:10px;
+}
+.icon-input i{
+  margin-right:12px;
+  color:#2e7d32;
+  min-width:20px;
+  font-size:18px;
+}
+.icon-input input, .icon-input select, .icon-input textarea {
+  flex: 1;
+}
+#qty {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+  flex-wrap: wrap;
+  background:#f5f5f5;
+}
+.tab {
+  flex: 1;
+  padding: 15px 5px;
+  text-align: center;
+  cursor: pointer;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  min-width: 80px;
+  font-size:14px;
+  font-weight:bold;
+}
+.tab.active {
+  background: #4caf50;
+  color: white;
+}
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+}
+.payment-option {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  margin: 10px 0;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.payment-option.selected {
+  border-color: #4caf50;
+  background: #e8f5e9;
+}
+.payment-option i {
+  font-size: 24px;
+  margin-right: 15px;
+  color: #2e7d32;
+}
+.rating {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  gap: 5px;
+  margin: 15px 0;
+}
+.rating input {
+  display: none;
+}
+.rating label {
+  font-size: 30px;
+  color: #ddd;
+  cursor: pointer;
+}
+.rating label:hover,
+.rating label:hover ~ label,
+.rating input:checked ~ label {
+  color: #ffc107;
+}
+.customer-review-card {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-left: 5px solid #ff9800;
+}
+.rating-display {
+  color: #ffc107;
+  font-size: 20px;
+}
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+.filters button {
+  flex: 1;
+  margin: 0;
+  padding: 10px;
+  font-size: 14px;
+}
+.tracking-step {
+  display: flex;
+  margin-bottom: 15px;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+.tracking-step .step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  color: white;
+}
+.step-completed .step-icon {
+  background: #4caf50;
+}
+.step-active .step-icon {
+  background: #ff9800;
+  animation: pulse 1.5s infinite;
+}
+.step-content {
+  flex: 1;
+  text-align:left;
+}
+.status-pending{color:#ff9800; font-weight:bold;}
+.status-processing{color:#2196f3; font-weight:bold;}
+.status-ready{color:#4caf50; font-weight:bold;}
+.status-delivered{color:#9c27b0; font-weight:bold;}
+.order-card {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-left: 5px solid #ff9800;
+}
+.order-card h4 {
+  margin-top: 0;
+  color: #2e7d32;
+}
+.stock-update-toast {
+  position: fixed;
+  bottom: 180px;
+  left: 20px;
+  right: 20px;
+  background: #4caf50;
+  color: white;
+  padding: 12px;
+  border-radius: 50px;
+  text-align: center;
+  font-weight: bold;
+  z-index: 10000;
+  animation: slideIn 0.5s;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+@keyframes slideIn {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- ONLY WHATSAPP FLOATING BUTTON - NO INSTALL BUTTON, NO QR BUTTON -->
+<a id="whatsappFloat" href="https://wa.me/26876123456" target="_blank" class="whatsapp-float">
+  <i class="fa-brands fa-whatsapp"></i> Order via WhatsApp
+</a>
+
+<div class="app">
+<header>
+  <h2>🐔 Lusungulo Fresh Broilers</h2>
+  <p>Fresh, Delicious & Ready for You!</p>
+  <div class="welcome-badge">
+    <i class="fa-solid fa-face-smile"></i> Welcome!
+  </div>
+  <div id="offlineStatus" class="offline-badge" style="display:none;">
+    <i class="fa-solid fa-wifi-slash"></i> OFFLINE MODE
+  </div>
+  <div class="stock-badge" id="totalStockDisplay">
+    <i class="fa-solid fa-chicken"></i> Loading stock...
+  </div>
+</header>
+
+<!-- ===== NO QR SECTION, NO DOWNLOAD SECTION, NO APP LINK SECTION ===== -->
+<!-- JUST THE SPECIAL DEAL AND ORDERING INTERFACE -->
+
+<div class="special-deal">
+  🎉 SPECIAL DEAL: Buy 2 Medium Chickens, Get 1 Small FREE! 🎉
+</div>
+
+<!-- Tabs: ORDER, TRACK, RATE, REVIEWS ONLY -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('customer')">🛒 ORDER</button>
+  <button class="tab" onclick="switchTab('track')">📍 TRACK</button>
+  <button class="tab" onclick="switchTab('rate')">⭐ RATE</button>
+  <button class="tab" onclick="switchTab('reviews')">👥 REVIEWS</button>
+</div>
+
+<!-- CUSTOMER ORDER TAB -->
+<div id="customerTab" class="tab-content active">
+<div class="section">
+<div class="notice">
+  <i class="fa-solid fa-lock"></i> 🔐 E50 refundable deposit required for MoMo payments
+</div>
+
+<form id="orderForm">
+  <div class="icon-input">
+    <i class="fa-solid fa-user"></i>
+    <input id="name" placeholder="Full Name" required>
+  </div>
+  <div class="icon-input">
+    <i class="fa-solid fa-phone"></i>
+    <input id="phone" placeholder="Phone Number" required>
+  </div>
+  <div class="icon-input">
+    <i class="fa-solid fa-id-card"></i>
+    <input id="idNumber" placeholder="National ID Number" required>
+  </div>
+  <div class="icon-input">
+    <i class="fa-solid fa-house"></i>
+    <input id="address" placeholder="Delivery Address" required>
+  </div>
+
+  <h4>🐔 Available Birds in Stock</h4>
+  <div id="liveStockDisplay"></div>
+
+  <h4>🐔 Select Size</h4>
+  <div id="sizeCards"></div>
+  <select id="size" required style="display:none;">
+    <option value="">Select Size</option>
+    <option value="1.5">Small (1.5 kg)</option>
+    <option value="2.0">Medium (2 kg)</option>
+    <option value="2.5">Large (2.5 kg)</option>
+  </select>
+
+  <h4>📦 Quantity</h4>
+  <input type="number" id="qty" placeholder="Quantity" value="1" min="1" required>
+
+  <h4>🍗 Select Type</h4>
+  <select id="type" required>
+    <option value="">Select Type</option>
+    <option value="full">Full Chicken</option>
+    <option value="cut">Cut Pieces</option>
+  </select>
+
+  <img id="fullImg" class="option-img" src="https://images.unsplash.com/photo-1604908177524-9f409a8b3d95?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&h=200&w=400" style="display:none;" alt="Full Chicken">
+  <img id="cutImg" class="option-img" src="https://images.unsplash.com/photo-1601050692362-9f90f13ee824?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&h=200&w=400" style="display:none;" alt="Cut Pieces">
+
+  <div id="services" style="display:none;">
+    <h4>🍴 Select Service (Full Chicken Only)</h4>
+    <select id="service">
+      <option value="">No Service</option>
+      <option value="5">Ready to Cook + E5</option>
+      <option value="10">Curry Cut + E10</option>
+    </select>
+    <img id="serviceImg" class="option-img" style="display:none;" alt="Service Image">
+  </div>
+
+  <h4>💳 Payment Method</h4>
+  <div id="paymentOptions">
+    <div class="payment-option" onclick="selectPayment('momo')" id="paymentMomo">
+      <i class="fa-solid fa-mobile-alt"></i>
+      <div style="flex:1; text-align:left;">
+        <strong>MoMo (Mobile Money)</strong><br>
+        <small>Pay E50 deposit via Mobile Money</small>
+      </div>
+      <i class="fa-solid fa-check-circle" id="checkMomo" style="color:#4caf50; display:none;"></i>
+    </div>
+    <div class="payment-option" onclick="selectPayment('cash')" id="paymentCash">
+      <i class="fa-solid fa-money-bill-wave"></i>
+      <div style="flex:1; text-align:left;">
+        <strong>Cash on Delivery</strong><br>
+        <small>Pay full amount when order arrives</small>
+      </div>
+      <i class="fa-solid fa-check-circle" id="checkCash" style="color:#4caf50; display:none;"></i>
+    </div>
+  </div>
+  <input type="hidden" id="paymentMethod" value="momo">
+
+  <div id="momoFields">
+    <h4>💳 MoMo Payment Details</h4>
+    <div class="icon-input">
+      <i class="fa-solid fa-calendar"></i>
+      <input type="date" id="payDate" required>
+    </div>
+    <div class="icon-input">
+      <i class="fa-solid fa-clock"></i>
+      <input type="time" id="payTime" required>
+    </div>
+    <div class="icon-input">
+      <i class="fa-solid fa-user"></i>
+      <input id="momoName" placeholder="Your Name as Registered in MoMo" required>
+    </div>
+  </div>
+
+  <div id="cashFields" style="display:none;">
+    <h4>💵 Cash on Delivery</h4>
+    <div class="notice">
+      <i class="fa-solid fa-info-circle"></i> Pay full amount E<span id="cashTotal">0</span> when your order arrives
+    </div>
+  </div>
+
+  <div class="price-box">
+    Total Price: <span id="totalPrice">0</span> E
+  </div>
+
+  <button type="submit">
+    <i class="fa-brands fa-whatsapp"></i> SEND ORDER VIA WHATSAPP
+  </button>
+</form>
+
+<button onclick="switchTab('track')" class="btn-info">
+  <i class="fa-solid fa-location-dot"></i> TRACK YOUR ORDER
+</button>
+</div>
+
+<!-- RECEIPT -->
+<div id="receipt" class="section">
+  <h3>🧾 ORDER RECEIPT</h3>
+  <p id="rName"></p>
+  <p id="rPhone"></p>
+  <p id="rOrder"></p>
+  <p id="rDeposit"></p>
+  <p id="rTotal"></p>
+  <p id="rPayment"></p>
+  <p id="rMomoName"></p>
+  <p id="rTracking"></p>
+  <div id="rQRCode" style="margin:15px auto;"></div>
+  <button onclick="window.print()">🖨 Print Receipt</button>
+  <button onclick="switchTab('track')" class="btn-info">📍 Track Order</button>
+  <button onclick="switchTab('rate')" class="btn-warning">⭐ Rate Your Order</button>
+</div>
+</div>
+
+<!-- TRACKING TAB -->
+<div id="trackTab" class="tab-content">
+<div class="section">
+  <h3>📍 TRACK YOUR ORDER</h3>
+  <div class="icon-input">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input id="trackPhone" placeholder="Enter your phone number">
+  </div>
+  <button onclick="trackOrder()">
+    <i class="fa-solid fa-search"></i> TRACK ORDER
+  </button>
+  <div id="trackingResult" style="margin-top:20px;"></div>
+</div>
+</div>
+
+<!-- RATING TAB -->
+<div id="rateTab" class="tab-content">
+<div class="section">
+  <h3>⭐ RATE & REVIEW</h3>
+  <div class="icon-input">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input id="ratePhone" placeholder="Enter your phone number to review">
+  </div>
+  <button onclick="loadOrdersForRating()">
+    <i class="fa-solid fa-search"></i> FIND MY ORDERS
+  </button>
+  <div id="ordersForRating" style="margin-top:20px;"></div>
+</div>
+</div>
+
+<!-- REVIEWS TAB -->
+<div id="reviewsTab" class="tab-content">
+<div class="section">
+  <h3>👥 CUSTOMER REVIEWS</h3>
+  <div class="filters">
+    <button onclick="loadPublicReviews('all')" class="btn-info">⭐ ALL REVIEWS</button>
+    <button onclick="loadPublicReviews('high')" class="btn-success">🌟🌟🌟🌟🌟</button>
+    <button onclick="loadPublicReviews('low')" class="btn-warning">⭐⭐⭐</button>
+  </div>
+  <div id="publicReviewsList"></div>
+</div>
+</div>
+
+<!-- ADMIN LOGIN (Hidden from customers) -->
+<div style="text-align:center; margin-top:30px; padding:15px; border-top:1px solid #eee;">
+  <button onclick="showAdminLogin()" style="background:#9e9e9e; width:auto; padding:8px 20px; font-size:14px;">
+    👑 Admin Access
+  </button>
+</div>
+
+</div> <!-- close .app -->
+
+<!-- ADMIN LOGIN MODAL -->
+<div id="adminLoginModal" class="modal">
+  <div class="modal-box">
+    <h3>👑 ADMIN LOGIN</h3>
+    <input type="password" id="adminPassword" placeholder="Enter Admin Password">
+    <button onclick="verifyAdmin()" style="background:#4caf50;">LOGIN</button>
+    <button onclick="closeLoginModal()" style="background:#f44336;">CANCEL</button>
+    <p style="margin-top:15px; font-size:12px; color:#666;">Default password: admin123</p>
+  </div>
+</div>
+
+<!-- ADMIN PANEL (hidden by default) -->
+<div id="adminSection" style="display:none; padding:20px; margin:20px; background:#f5f5f5; border-radius:15px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h3 style="margin:0;">👑 ADMIN PANEL</h3>
+    <button onclick="logoutAdmin()" style="background:#f44336; width:auto; padding:8px 15px;">🚪 LOGOUT</button>
+  </div>
+  
+  <!-- FIREBASE RULES CHECK -->
+  <div style="background:#ffebee; padding:15px; border-radius:10px; margin-bottom:20px; border-left:5px solid #f44336;">
+    <h4 style="color:#f44336; margin-top:0;">⚠️ IMPORTANT: SET FIREBASE RULES</h4>
+    <p style="margin-bottom:10px;">Stock updates are not working because Firebase Realtime Database rules are blocking writes.</p>
+    <p style="font-weight:bold;">Copy and paste this in Firebase Console → Realtime Database → Rules:</p>
+    <pre style="background:#333; color:#fff; padding:15px; border-radius:5px; overflow-x:auto; text-align:left;">
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}</pre>
+    <button onclick="window.open('https://console.firebase.google.com/project/lusungulo-3a422/database/lusungulo-3a422-default-rtdb/rules', '_blank')" style="background:#2196f3; margin-top:10px;">
+      🔧 OPEN FIREBASE RULES
+    </button>
+  </div>
+  
+  <!-- UPDATE CUSTOMER ACCESS -->
+  <div style="background:#e8f5e9; padding:20px; border-radius:10px; margin-bottom:20px;">
+    <h4>📱 CUSTOMER ACCESS SETTINGS</h4>
+    <input type="text" id="adminWhatsappNumber" placeholder="WhatsApp Number (e.g., 26876123456)" value="26876123456" style="margin-bottom:10px;">
+    <button onclick="updateCustomerAccess()" class="btn-info">
+      <i class="fa-solid fa-qrcode"></i> UPDATE WHATSAPP NUMBER
+    </button>
+  </div>
+  
+  <!-- STOCK MANAGEMENT -->
+  <div style="background:#fff3e0; padding:20px; border-radius:10px; margin-bottom:20px;">
+    <h4>📦 STOCK MANAGEMENT</h4>
+    <div style="background:#e8eaf6; padding:15px; border-radius:10px; margin-bottom:15px;">
+      <p style="font-weight:bold; color:#2196f3;">🔴 STOCK NOT UPDATING? TRY THIS TEST:</p>
+      <button onclick="testDirectStockWrite()" style="background:#f44336; color:white; font-size:18px; padding:15px;">
+        🧪 CLICK HERE TO TEST STOCK UPDATE
+      </button>
+    </div>
+    <div id="stockManagement"></div>
+    <div style="display:flex; gap:10px; margin-top:15px;">
+      <button onclick="showAddStockModal()" class="btn-info" style="flex:1;">➕ ADD NEW BATCH</button>
+      <button onclick="showAdjustStockModal()" class="btn-warning" style="flex:1;">✏️ ADJUST STOCK</button>
+    </div>
+  </div>
+  
+  <!-- CUSTOMER STATS -->
+  <div style="background:#e3f2fd; padding:20px; border-radius:10px; margin-bottom:20px;">
+    <h4>👥 CUSTOMER STATISTICS</h4>
+    <div id="customerStats"></div>
+  </div>
+  
+  <!-- ALL ORDERS -->
+  <h4>📋 ALL ORDERS</h4>
+  <div id="ordersList" style="margin-bottom:20px;"></div>
+  
+  <div style="display:flex; gap:10px;">
+    <button onclick="exportOrders()" class="btn-info" style="flex:1;">📊 EXPORT ORDERS</button>
+    <button onclick="exportCustomers()" class="btn-info" style="flex:1;">📊 EXPORT CUSTOMERS</button>
+  </div>
+</div>
+
+<!-- ADD STOCK MODAL -->
+<div id="addStockModal" class="modal">
+  <div class="modal-box">
+    <h3>➕ ADD NEW BATCH</h3>
+    <select id="stockSize">
+      <option value="1.5">Small (1.5kg)</option>
+      <option value="2.0">Medium (2kg)</option>
+      <option value="2.5">Large (2.5kg)</option>
+    </select>
+    <input type="number" id="stockQuantity" placeholder="Quantity to Add" min="1">
+    <input type="number" id="stockPrice" placeholder="Price per kg" value="45">
+    <button onclick="addStock()" style="background:#4caf50;">ADD TO INVENTORY</button>
+    <button onclick="closeModal()" style="background:#f44336;">CANCEL</button>
+  </div>
+</div>
+
+<!-- ADJUST STOCK MODAL -->
+<div id="adjustStockModal" class="modal">
+  <div class="modal-box">
+    <h3>✏️ ADJUST STOCK</h3>
+    <select id="adjustSize" style="margin-bottom:15px;">
+      <option value="1.5">Small (1.5kg)</option>
+      <option value="2.0">Medium (2kg)</option>
+      <option value="2.5">Large (2.5kg)</option>
+    </select>
+    <div style="display:flex; gap:10px; margin-top:10px; margin-bottom:15px;">
+      <button onclick="adjustStockFromModal(-1)" class="btn-warning" style="flex:1;">-1</button>
+      <button onclick="adjustStockFromModal(-5)" class="btn-warning" style="flex:1;">-5</button>
+      <button onclick="adjustStockFromModal(-10)" class="btn-warning" style="flex:1;">-10</button>
+    </div>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+      <button onclick="adjustStockFromModal(1)" class="btn-success" style="flex:1;">+1</button>
+      <button onclick="adjustStockFromModal(5)" class="btn-success" style="flex:1;">+5</button>
+      <button onclick="adjustStockFromModal(10)" class="btn-success" style="flex:1;">+10</button>
+    </div>
+    <div style="margin-top:15px;">
+      <label style="display:block; text-align:left; margin-bottom:5px;">Custom Quantity:</label>
+      <input type="number" id="customAdjust" placeholder="Enter quantity" min="1" style="width:100%; padding:10px;">
+    </div>
+    <div style="display:flex; gap:10px; margin-top:15px;">
+      <button onclick="adjustStockFromModal(0)" class="btn-info" style="flex:1;">APPLY CUSTOM</button>
+      <button onclick="closeAdjustModal()" style="background:#f44336; flex:1;">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- RATING MODAL -->
+<div id="ratingModal" class="modal">
+  <div class="modal-box">
+    <h3>⭐ RATE YOUR ORDER</h3>
+    <div id="ratingOrderDetails"></div>
+    <div class="rating">
+      <input type="radio" name="rating" id="star5" value="5"><label for="star5">★</label>
+      <input type="radio" name="rating" id="star4" value="4"><label for="star4">★</label>
+      <input type="radio" name="rating" id="star3" value="3"><label for="star3">★</label>
+      <input type="radio" name="rating" id="star2" value="2"><label for="star2">★</label>
+      <input type="radio" name="rating" id="star1" value="1"><label for="star1">★</label>
+    </div>
+    <textarea id="reviewComment" placeholder="Write your review here..." rows="4"></textarea>
+    <button onclick="submitRating()" style="background:#4caf50;">SUBMIT REVIEW</button>
+    <button onclick="closeRatingModal()" style="background:#f44336;">CANCEL</button>
+  </div>
+</div>
+
+<!-- CONFIRM DELIVERY MODAL -->
+<div id="confirmModal" class="modal">
+  <div class="modal-box">
+    <h3>✅ CONFIRM DELIVERY</h3>
+    <p>Have you received your order?</p>
+    <div id="confirmOrderDetails"></div>
+    <button onclick="confirmDelivery()" style="background:#4caf50;">YES, I RECEIVED IT</button>
+    <button onclick="closeConfirmModal()" style="background:#f44336;">CANCEL</button>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+// ============================================
+// 🔥🔥🔥 FIREBASE CONFIGURATION 🔥🔥🔥
+// ============================================
+var firebaseConfig = {
+  apiKey: "AIzaSyCXJeodZbNeGyLfJgQrqYriJVdgi-GOA1o",
+  authDomain: "lusungulo-3a422.firebaseapp.com",
+  databaseURL: "https://lusungulo-3a422-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "lusungulo-3a422",
+  storageBucket: "lusungulo-3a422.firebasestorage.app",
+  messagingSenderId: "644814725574",
+  appId: "1:644814725574:web:cfbaa03a1ee7ba7e1e7ac7",
+  measurementId: "G-E25HW7HNZ6"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+var db = firebase.database();
+
+// ============================================
+// GLOBAL VARIABLES
+// ============================================
+let BUSINESS_WHATSAPP = "26876123456";
+
+// ============================================
+// 🔄 UPDATE WHATSAPP (Admin)
+// ============================================
+window.updateCustomerAccess = function() {
+  const newNumber = document.getElementById('adminWhatsappNumber').value.replace(/\D/g, '');
+  if (newNumber.length >= 10) {
+    BUSINESS_WHATSAPP = newNumber;
+    document.getElementById('whatsappFloat').href = `https://wa.me/${newNumber}`;
+    Swal.fire('Success', 'WhatsApp number updated!', 'success');
+  } else {
+    Swal.fire('Error', 'Enter valid phone number', 'error');
+  }
+};
+
+// ============================================
+// 📦 STOCK MANAGEMENT - COPY YOUR FULL FUNCTIONS HERE
+// ============================================
+// IMPORTANT: Copy all your working Firebase functions here:
+// - initializeStockListener()
+// - updateCustomerStockDisplay()
+// - updateTotalBirdsCount()
+// - updateSizeCards()
+// - showStockUpdateToast()
+// - loadAdminStockManagement()
+// - adjustStock()
+// - adjustStockFromModal()
+// - addStock()
+// - testDirectStockWrite()
+// - selectSize()
+// - updatePrice()
+// - selectPayment()
+// - switchTab()
+// - trackOrder()
+// - loadOrdersForRating()
+// - openRatingModal()
+// - closeRatingModal()
+// - submitRating()
+// - showConfirmDelivery()
+// - confirmDelivery()
+// - closeConfirmModal()
+// - loadPublicReviews()
+// - loadCustomerStats()
+// - loadAllOrders()
+// - updateOrderStatus()
+// - deleteOrder()
+// - showAddStockModal()
+// - closeModal()
+// - showAdjustStockModal()
+// - closeAdjustModal()
+// - showSetPriceModal()
+// - exportOrders()
+// - exportCustomers()
+// - initializeStock()
+//
+// Your existing functions from your original code should be pasted here.
+// I've kept them out for brevity, but you MUST include them for the app to work.
+
+// ============================================
+// 🚀 INITIALIZATION
+// ============================================
+window.onload = function() {
+  console.log("🚀 Starting Lusungulo Fresh Broilers - Pure Interface");
+  
+  // Initialize stock listener
+  if (typeof initializeStockListener === 'function') {
+    initializeStockListener();
+  }
+  
+  // Set default values
+  if (typeof updatePrice === 'function') updatePrice();
+  if (typeof selectPayment === 'function') selectPayment('momo');
+  
+  // Set default dates
+  const today = new Date().toISOString().split('T')[0];
+  const payDate = document.getElementById('payDate');
+  const payTime = document.getElementById('payTime');
+  if (payDate) payDate.value = today;
+  if (payTime) payTime.value = '12:00';
+  
+  console.log("✅ Pure Interface ready - NO QR, NO DOWNLOAD PROMPTS");
+};
+</script>
+
+</body>
+</html>
